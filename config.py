@@ -11,7 +11,8 @@ RX_ONLY_AB = r'[^A-Za-z]'
 
 ALL_DATA = DATA_PATH + "covid19_all.csv"
 US_DATA = DATA_PATH + "covid19_us.csv"
-US_REOPEN_DATA  = DATA_PATH + "covid19_us_reopen.csv"
+US_REOPEN_DATA = DATA_PATH + "covid19_us_reopen.csv"
+US_REOPEN_EMOTION = DATA_PATH + "covid19_us_reopen_emotion.csv"
 
 US_STATES = {
     'Alabama': 'AL',
@@ -72,3 +73,17 @@ US_STATES = {
     'Wyoming': 'WY',
     'United States of America': 'USA'
 }
+
+def get_ibm_tone_format_tweet(tweet):
+    tweet = tweet.replace('\n\n','; ') #newlines
+    if (tweet.startswith("RT ")): tweet = ' '.join(tweet.split()[2:]) #re-tweet
+    tweet = re.sub(cf.RX_MENTION, '', tweet) #mention
+    tweet = re.sub(cf.RX_HASHTAG, '', tweet) #hashtag
+    tweet = re.sub(cf.RX_URL, '', tweet) #url
+    tweet = re.sub(cf.RX_EMAIL, '', tweet) #email
+    tweet = re.sub(r"[^A-Za-z0-9,;-_/]", ' ', tweet) #non-char ,;'-_/
+    tweet = ' '.join(tweet.split()) #white spaces
+    tweet = (tweet if tweet[-1].isalnum() else tweet[:-1]) + " ." #dot
+    tweet = "{}{}".format(tweet[0].upper(),tweet[1:])
+    return tweet.strip()
+
